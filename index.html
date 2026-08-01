@@ -653,6 +653,30 @@ We ❤️ 80s Mission Control
             </div>
 
 
+            <div class="analytics-section">
+
+                <h4>☁️ Google Drive Sync</h4>
+
+                <p class="tweetgen-hint">
+                    Verbinde dein Google Drive, damit dein Mission-Control-Stand direkt dort landet -
+                    ohne Datei-Download/Upload per Hand. Die Verbindung sieht ausschließlich Dateien,
+                    die Mission Control selbst anlegt (Ordner "Mission Control Sync"), nicht dein
+                    restliches Drive.
+                </p>
+
+                <button id="driveConnectButton" class="analytics-inline-button">
+                    🔗 Mit Google Drive verbinden
+                </button>
+
+                <button id="driveSyncButton" class="analytics-inline-button" disabled>
+                    ☁️ Jetzt synchronisieren
+                </button>
+
+                <span id="driveSyncStatus" class="analytics-import-status"></span>
+
+            </div>
+
+
 
         </section>
 
@@ -1012,6 +1036,9 @@ We ❤️ 80s Mission Control
 
 
 <script src="app.js"></script>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="assets/js/modules/drivesync.js"></script>
 
 
 
