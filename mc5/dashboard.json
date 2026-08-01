@@ -1,0 +1,18 @@
+{
+  "version": "5.0",
+  "project": "We ❤️ 80s Mission Control",
+  "dashboard": {
+    "open": 18,
+    "inProgress": 7,
+    "ready": 11,
+    "archive": 486
+  },
+  "planner": [],
+  "archive": [],
+  "settings": {
+    "theme": "dark",
+    "language": "de",
+    "autosave": true,
+    "brand": "We ❤️ 80s"
+  }
+}

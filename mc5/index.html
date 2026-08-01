@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+We ❤️ 80s Mission Control
+</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body>
+
+
+<div class="app-shell">
+
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+
+    <aside class="sidebar">
+
+
+        <div class="logo-area">
+
+            <img src="assets/images/logo.png" alt="We Love 80s" class="brand-logo">
+
+            <span>
+                Mission Control 5.1
+            </span>
+
+        </div>
+
+
+
+        <nav class="main-nav">
+
+
+            <button data-page="dashboard">
+                🏠 Dashboard
+            </button>
+
+
+            <button data-page="content">
+                ✍️ Content
+            </button>
+
+
+            <button data-page="archive">
+                📦 Archiv
+            </button>
+
+
+            <button data-page="analytics">
+                📊 Analytics
+            </button>
+
+
+            <button data-page="settings">
+                ⚙️ Settings
+            </button>
+
+
+        </nav>
+
+
+    </aside>
+
+
+
+
+
+    <!-- =========================
+         MAIN AREA
+    ========================== -->
+
+
+    <main class="main-content">
+
+
+
+        <header class="top-header">
+
+
+            <h2>
+                Mission Control
+            </h2>
+
+
+            <div class="status-box">
+
+                System Online
+
+            </div>
+
+
+        </header>
+
+
+
+
+
+        <!-- =========================
+             DASHBOARD
+        ========================== -->
+
+
+        <section 
+        id="dashboard"
+        class="page active-page">
+
+
+            <div class="page-title">
+
+                <h3>🏠 Dashboard</h3>
+
+                <p>Übersicht deiner We ❤️ 80s Aktivitäten</p>
+
+            </div>
+
+
+
+            <!-- KENNZAHLEN-KARTEN -->
+            <div class="dashboard-stats-grid">
+
+                <div class="dashboard-stat-card">
+                    <p class="dashboard-stat-label">Nächster Slot</p>
+                    <p class="dashboard-stat-value" id="dashStatNextSlot">–</p>
+                    <p class="dashboard-stat-sub" id="dashStatNextDay"></p>
+                </div>
+
+                <div class="dashboard-stat-card">
+                    <p class="dashboard-stat-label">Posts gesamt</p>
+                    <p class="dashboard-stat-value" id="dashStatTotal">–</p>
+                    <p class="dashboard-stat-sub">im Archiv</p>
+                </div>
+
+                <div class="dashboard-stat-card">
+                    <p class="dashboard-stat-label">Zeitversetzt</p>
+                    <p class="dashboard-stat-value" id="dashStatScheduled">–</p>
+                    <p class="dashboard-stat-sub">noch ausstehend</p>
+                </div>
+
+                <div class="dashboard-stat-card">
+                    <p class="dashboard-stat-label">Bester Tag</p>
+                    <p class="dashboard-stat-value" id="dashStatBestDay">–</p>
+                    <p class="dashboard-stat-sub" id="dashStatBestDayImpr"></p>
+                </div>
+
+                <div class="dashboard-stat-card" id="dashStatReplyCard">
+                    <p class="dashboard-stat-label">Reply-Anteil (7 Tage)</p>
+                    <p class="dashboard-stat-value" id="dashStatReplyQuota">–</p>
+                    <p class="dashboard-stat-sub" id="dashStatReplyQuotaSub">CSV importieren für Daten</p>
+                </div>
+
+            </div>
+
+            <!-- WOCHENTAGS-PERFORMANCE (kompakt, oben) -->
+            <div class="card" style="margin-bottom:16px;">
+                <h4>📊 Wochentags-Performance (Ø Impressions, aus CSV)</h4>
+                <div id="dashboardWeekdayPerformance" class="weekday-perf-grid">
+                    <p class="planner-empty">Noch keine CSV importiert – Analytics-Seite besuchen.</p>
+                </div>
+            </div>
+
+
+
+            <!-- COUNTDOWN -->
+            <div class="dashboard-grid">
+
+                <div class="card">
+
+                    <h4>⏰ Nächster optimaler Posting-Zeitpunkt</h4>
+
+                    <p id="nextPostTimer" class="dashboard-timer">Lädt...</p>
+
+                    <p class="dashboard-subtext" id="nextPostTimerSub"></p>
+
+                    <button id="slotDoneButton" class="analytics-inline-button">
+                        ✅ Erledigt – nächster Slot
+                    </button>
+
+                    <p class="dashboard-subtext" id="slotDoneHint">
+                        Tweet für diesen Slot zeitversetzt geplant? Dann hier abhaken.
+                    </p>
+
+                </div>
+
+
+
+                <div class="card">
+
+                    <h4>📊 Bester Wochentag (aus deinen Daten)</h4>
+
+                    <p id="bestDayInsight">
+                        Noch keine CSV importiert – Analytics-Seite besuchen.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EVERGREEN TOP 3 -->
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+
+                    <h4>🔖 Evergreen-Tipps</h4>
+
+                    <span class="analytics-import-status">Mindestens 200 Tage nicht gepostet · höchste Save-Rate</span>
+
+                </div>
+
+                <div id="dashboardEvergreen" class="dashboard-evergreen-wrap">
+                    <p class="planner-empty">Wird geladen…</p>
+                </div>
+
+            </div>
+
+
+
+            <!-- HISTORY -->
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+
+                    <h4>🗒️ Bereits geplant &amp; gepostet (History)</h4>
+
+                    <span id="dashboardHistoryCount" class="analytics-import-status"></span>
+
+                </div>
+
+                <div class="modal-field">
+                    <input type="text" id="historySearchInput" placeholder="🔍 History durchsuchen (Song, Text, Kategorie)...">
+                </div>
+
+                <div id="dashboardHistory" class="planner-container">
+                </div>
+
+            </div>
+
+
+
+        </section>
+              <!-- =========================
+             PLANNER
+        ========================== -->
+
+
+        <section
+        id="archive"
+        class="page">
+
+
+            <div class="page-title">
+
+                <h3>📦 Archiv</h3>
+
+                <p>Alle geposteten Tweets – live oder zeitversetzt.</p>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+
+                    <h4>Gepostete Tweets</h4>
+
+                    <span id="archiveCount" class="analytics-import-status"></span>
+
+                </div>
+
+                <div class="modal-field">
+                    <input type="text" id="archiveSearchInput" placeholder="🔍 Archiv durchsuchen (Song, Text, Kategorie)...">
+                </div>
+
+                <div id="archiveList" class="planner-container">
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+
+
+
+
+        <!-- =========================
+             AI STUDIO
+        ========================== -->
+
+
+        <section
+        id="content"
+        class="page">
+
+
+            <div class="page-title">
+
+                <h3>✍️ Content</h3>
+
+                <p>Tweet erstellen und posten – live oder zeitversetzt.</p>
+
+            </div>
+
+
+
+            <!-- SCHRITT 1: WORUM GEHT ES -->
+            <div class="analytics-section content-step">
+
+                <p class="content-step-label">1 · WORUM GEHT ES</p>
+
+                <div class="modal-field-row">
+
+                    <div class="modal-field">
+                        <label>Thema</label>
+                        <select id="contentTopic">
+                            <option value="Musik">🎵 Musik</option>
+                            <option value="Movie">🎬 Movie</option>
+                            <option value="TV Series">📺 TV Series</option>
+                            <option value="LP">💿 LP / Album</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Format</label>
+                        <select id="contentFormat">
+                            <option value="none">— nur Post</option>
+                            <option value="didyouknow">💡 Did You Know</option>
+                            <option value="story">📖 Behind the Story</option>
+                            <option value="funfact">🤯 Fun Fact</option>
+                            <option value="todayago">📅 Today, 40 Years Ago</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SCHRITT 2: DETAILS -->
+            <div class="analytics-section content-step">
+
+                <p class="content-step-label">2 · DETAILS</p>
+
+                <div class="modal-field-row">
+
+                    <div class="modal-field">
+                        <label>Titel / Thema</label>
+                        <input type="text" id="contentTitle" placeholder="z.B. Africa, Miami Vice">
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Künstler / TV Series / Movie</label>
+                        <input type="text" id="contentArtist" placeholder="z.B. Toto, NBC">
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Jahr</label>
+                        <input type="number" id="contentYear" placeholder="1982">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SCHRITT 3: KI-RECHERCHE -->
+            <div class="analytics-section content-step">
+
+                <p class="content-step-label">3 · KI-RECHERCHE <span class="content-optional">(optional)</span></p>
+
+                <div class="modal-field">
+                    <label>Prompt an Gemini</label>
+                    <textarea id="contentAIPrompt" rows="2" placeholder="Wird automatisch aus Thema + Format erzeugt – du kannst ihn anpassen..."></textarea>
+                </div>
+
+                <button id="contentAskAIButton" class="analytics-inline-button">
+                    🤖 Gemini fragen
+                </button>
+
+                <a id="contentWikimediaButton"
+                   href="#"
+                   target="_blank"
+                   rel="noopener"
+                   class="analytics-inline-button content-wikimedia-btn">
+                    🖼️ Bild auf Wikimedia
+                </a>
+
+                <span id="contentAIStatus" class="analytics-import-status"></span>
+
+                <p class="tweetgen-hint">⬇ Die Antwort erscheint direkt in der Tweet-Vorschau unten.</p>
+
+            </div>
+
+
+
+            <!-- SCHRITT 4: TWEET-VORSCHAU -->
+            <div class="analytics-section content-step">
+
+                <p class="content-step-label">4 · TWEET-VORSCHAU <span class="content-optional">(bearbeitbar – KI-Antwort landet hier)</span></p>
+
+                <button id="contentGenerateButton" class="analytics-inline-button">
+                    ✨ Tweet-Vorschau erzeugen
+                </button>
+
+                <div class="modal-field tweetgen-output-wrap">
+                    <textarea id="contentOutput" rows="10" placeholder="Hier erscheint der Tweet – fette erste Zeile, Hashtags, dann dein Inhalt. Frei bearbeitbar."></textarea>
+                </div>
+
+                <button id="contentCopyButton" class="analytics-inline-button">
+                    📋 In Zwischenablage kopieren
+                </button>
+
+                <span id="contentCopyStatus" class="analytics-import-status"></span>
+
+            </div>
+
+
+
+            <!-- SCHRITT 5: WIE GEPOSTET -->
+            <div class="analytics-section content-step">
+
+                <p class="content-step-label">5 · WIE GEPOSTET?</p>
+
+                <div class="content-post-buttons">
+
+                    <button id="contentLiveButton" class="content-post-btn content-live-btn">
+                        🔴 Live gepostet
+                    </button>
+
+                    <button id="contentScheduledButton" class="content-post-btn content-scheduled-btn">
+                        🕐 Zeitversetzt geplant
+                    </button>
+
+                </div>
+
+                <div id="contentScheduleWrap" class="content-schedule-wrap" style="display:none;">
+                    <label for="contentScheduleInput">🕐 Geplant für:</label>
+                    <input type="datetime-local" id="contentScheduleInput">
+                    <button id="contentScheduleConfirm" class="analytics-inline-button">
+                        ✓ Ins Archiv
+                    </button>
+                </div>
+
+                <p class="tweetgen-hint">→ Danach wandert der Post ins Archiv, markiert als live oder zeitversetzt.</p>
+
+                <span id="contentPostStatus" class="analytics-import-status"></span>
+
+            </div>
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+        <!-- =========================
+             SETTINGS
+        ========================== -->
+
+
+        <section
+        id="settings"
+        class="page">
+
+
+            <div class="page-title">
+
+
+                <h3>
+                    ⚙️ Settings
+                </h3>
+
+
+                <p>
+                    Mission Control Einstellungen
+                </p>
+
+
+            </div>
+
+
+
+
+            <div class="card">
+
+
+                <h4>
+                    System
+                </h4>
+
+
+                <p>
+                    Module und Erweiterungen verwalten
+                </p>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>⏰ Beste Posting-Zeiten (pro Wochentag)</h4>
+
+                <p class="tweetgen-hint">
+                    Aus X's "Aktive Zeiten"-Heatmap abgelesen (deine lokale Zeitzone). Für Tage ohne eigene
+                    Zeit gilt der Standard-Wert. Mehrere Zeiten pro Tag mit Komma trennen.
+                </p>
+
+                <p class="tweetgen-hint" id="postingTimesPerformanceHint">
+                    Die Ø-Werte unter jedem Tag stammen aus deinen importierten CSV-Daten (Reichweite pro Wochentag) – die Uhrzeit selbst musst du weiterhin manuell eintragen, da X das nicht exportiert.
+                </p>
+
+                <div class="posting-times-grid">
+
+                    <div class="modal-field">
+                        <label>Montag</label>
+                        <input type="text" id="postingTimeMo" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeMoHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Dienstag</label>
+                        <input type="text" id="postingTimeDi" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeDiHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Mittwoch</label>
+                        <input type="text" id="postingTimeMi" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeMiHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Donnerstag</label>
+                        <input type="text" id="postingTimeDo" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeDoHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Freitag</label>
+                        <input type="text" id="postingTimeFr" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeFrHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Samstag</label>
+                        <input type="text" id="postingTimeSa" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeSaHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Sonntag</label>
+                        <input type="text" id="postingTimeSo" placeholder="Standard verwenden">
+                        <span class="posting-time-hint" id="postingTimeSoHint"></span>
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Standard (alle anderen Tage)</label>
+                        <input type="text" id="postingTimeDefault" placeholder="14:00, 18:00">
+                    </div>
+
+                </div>
+
+                <button id="settingsSaveTimesButton" class="analytics-inline-button">
+                    Speichern
+                </button>
+
+                <span id="settingsTimesStatus" class="analytics-import-status"></span>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>🤖 Gemini API-Key (kostenlos)</h4>
+
+                <p class="tweetgen-hint">
+                    Wird nur lokal in deinem Browser gespeichert (localStorage), niemals irgendwo hochgeladen.
+                    Nötig für den Tweet-Generator ("Did You Know?" / "Story behind...").
+                    Kostenlos zu bekommen unter aistudio.google.com/apikey (kein Kreditkarte nötig, mit Google-Konto einloggen, "Create API Key" klicken).
+                </p>
+
+                <div class="modal-field">
+
+                    <label>API-Key (AIza...)</label>
+
+                    <input type="password" id="settingsGeminiKey" placeholder="AIza...">
+
+                </div>
+
+                <button id="settingsSaveKeyButton" class="analytics-inline-button">
+                    Speichern
+                </button>
+
+                <span id="settingsKeyStatus" class="analytics-import-status"></span>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>💾 Backup / Datensicherung</h4>
+
+                <p class="tweetgen-hint">
+                    Alle deine Daten (Planner, Archiv, CSV-Historie, Einstellungen) liegen nur in diesem
+                    Browser. Sichere sie regelmäßig als Datei – so gehen sie bei Browser-Wechsel oder
+                    Cache-Löschung nicht verloren.
+                </p>
+
+                <button id="backupExportButton" class="analytics-inline-button">
+                    📤 Backup exportieren
+                </button>
+
+                <button id="backupImportButton" class="analytics-inline-button">
+                    📥 Backup importieren
+                </button>
+
+                <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none;">
+
+                <span id="backupStatus" class="analytics-import-status"></span>
+
+            </div>
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+        <!-- =========================
+             ANALYTICS
+        ========================== -->
+
+
+        <section
+        id="analytics"
+        class="page">
+
+
+            <div class="page-title">
+
+
+                <h3>
+                    📊 Analytics
+                </h3>
+
+
+                <p>
+                    Auswertung deiner geplanten Posts und echter X-Performance-Daten
+                </p>
+
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+
+                    <h4>📌 Account-Stand (@welove80sDE)</h4>
+
+                    <button id="updateAccountStandButton" class="analytics-inline-button">
+                        Aktualisieren
+                    </button>
+
+                </div>
+
+                <div
+                id="accountStandCards"
+                class="dashboard-grid">
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>Follower Gesamt (Personen, über Zeit)</h4>
+
+                <div id="accountFollowerTotalChart" class="analytics-chart">
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-import-bar">
+
+                <a id="openXAnalyticsLink"
+                   href="https://analytics.x.com/"
+                   target="_blank"
+                   rel="noopener"
+                   class="analytics-inline-button">
+                    📊 X-Analytics öffnen
+                </a>
+
+                <button id="importCsvButton">
+                    📥 X CSV importieren
+                </button>
+
+                <input
+                type="file"
+                id="csvFileInput"
+                accept=".csv,text/csv,text/plain,application/vnd.ms-excel"
+                style="display:none;">
+
+                <span id="csvImportStatus" class="analytics-import-status">
+                    Noch keine CSV importiert.
+                </span>
+
+            </div>
+
+            <div id="csvDropZone" class="csv-drop-zone">
+
+                <span class="csv-drop-icon">📥</span>
+                <span>CSV-Datei hierher ziehen &amp; ablegen</span>
+
+            </div>
+
+
+
+            <p id="csvDaysStored" class="analytics-import-status">
+                0 von 365 Tagen gespeichert.
+            </p>
+
+
+
+            <div class="analytics-section">
+
+                <h4>Follower-Entwicklung (Personen, pro Tag)</h4>
+
+                <div id="csvFollowerChart" class="analytics-chart">
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+
+                    <h4>Veränderung zum Vortag (%)</h4>
+
+                    <select id="csvPercentMetric">
+
+                        <option value="impressions">Impressions</option>
+                        <option value="likes">Gefällt mir</option>
+                        <option value="interactions">Interaktionen</option>
+
+                    </select>
+
+                </div>
+
+                <div id="csvPercentChart" class="analytics-chart">
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>X Account Performance (gesamt, alle Imports)</h4>
+
+                <div
+                id="csvSummary"
+                class="dashboard-grid">
+                </div>
+
+            </div>
+
+
+
+            <!-- TOP 3 GRID: nebeneinander -->
+            <div class="analytics-top3-grid">
+
+                <!-- Spalte 1: Top Posts -->
+                <div class="analytics-section analytics-top3-col">
+
+                    <div class="analytics-chart-header">
+                        <h4>🏆 Top Posts</h4>
+                        <select id="csvTopPostsSort">
+                            <option value="impressions">Meiste Impressions</option>
+                            <option value="date">Neueste zuerst</option>
+                        </select>
+                    </div>
+
+                    <div class="analytics-chart-header" style="margin-top:6px;">
+                        <select id="csvTopPostsLimit">
+                            <option value="10">Top 10</option>
+                            <option value="25">Top 25</option>
+                            <option value="50">Top 50</option>
+                            <option value="all">Alle</option>
+                        </select>
+                        <select id="csvTopPostsReplies">
+                            <option value="hide">Nur Content</option>
+                            <option value="show">Mit @ Antworten</option>
+                        </select>
+                    </div>
+
+                    <div id="csvTopPosts" class="analytics-breakdown analytics-scroll-list">
+                    </div>
+
+                </div>
+
+                <!-- Spalte 2: Top Reposts -->
+                <div class="analytics-section analytics-top3-col">
+
+                    <div class="analytics-chart-header">
+                        <h4>🔁 Top Reposts</h4>
+                        <span class="analytics-import-status">Meiste Weiterleitungen</span>
+                    </div>
+
+                    <div id="csvTopReposts" class="analytics-breakdown analytics-scroll-list">
+                    </div>
+
+                </div>
+
+                <!-- Spalte 3: Top Künstler -->
+                <div class="analytics-section analytics-top3-col">
+
+                    <div class="analytics-chart-header">
+                        <h4>⭐ Top Künstler</h4>
+                        <span class="analytics-import-status">Engagement-Score</span>
+                    </div>
+
+                    <div id="csvTopArtists" class="analytics-breakdown analytics-scroll-list">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Zweite Zeile: Top Reichweite + Detailerweiterungen -->
+            <div class="analytics-top3-grid">
+
+                <!-- Top Reichweite (Share-Rate) -->
+                <div class="analytics-section analytics-top3-col">
+
+                    <div class="analytics-chart-header">
+                        <h4>🔄 Top Reichweite</h4>
+                        <span class="analytics-import-status">Höchste Share-Rate</span>
+                    </div>
+
+                    <div id="csvViralPosts" class="analytics-breakdown analytics-scroll-list">
+                    </div>
+
+                </div>
+
+                <!-- Top Detailerweiterungen -->
+                <div class="analytics-section analytics-top3-col">
+
+                    <div class="analytics-chart-header">
+                        <h4>🔍 Top Leserate</h4>
+                        <span class="analytics-import-status">Meiste Detail-Klicks (Text gelesen)</span>
+                    </div>
+
+                    <div id="csvTopDetail" class="analytics-breakdown analytics-scroll-list">
+                    </div>
+
+                </div>
+
+                <!-- Evergreen -->
+                <div class="analytics-section analytics-top3-col">
+
+                    <div class="analytics-chart-header">
+                        <h4>🔖 Evergreen</h4>
+                        <span class="analytics-import-status">Höchste Save-Rate</span>
+                    </div>
+
+                    <div id="csvEvergreenPosts" class="analytics-breakdown analytics-scroll-list">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Wochentag-Tabelle: volle Breite -->
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+                    <h4>📅 Wochentag-Analyse</h4>
+                    <span class="analytics-import-status">Impressions · Engagement · Saves · Shares pro Tag</span>
+                </div>
+
+                <div id="csvWeekdayTable" class="analytics-breakdown">
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <div class="analytics-chart-header">
+                    <h4>📊 Format-Vergleich</h4>
+                    <span class="analytics-import-status">Welches Format wofür am besten funktioniert</span>
+                </div>
+
+                <div id="csvFormatComparison" class="analytics-breakdown">
+                </div>
+
+            </div>
+
+
+
+            <div
+            id="analyticsOverview"
+            class="dashboard-grid">
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>Status-Verteilung (Planner)</h4>
+
+                <div id="analyticsStatusBreakdown" class="analytics-breakdown">
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-section">
+
+                <h4>Kategorien (Planner)</h4>
+
+                <div id="analyticsCategoryBreakdown" class="analytics-breakdown">
+                </div>
+
+            </div>
+
+
+
+
+        </section>
+
+
+</div>
+
+
+
+
+
+<footer class="app-footer">
+
+
+    <span>
+
+        We ❤️ 80s Mission Control 5.1
+
+    </span>
+
+
+</footer>
+
+
+
+
+
+
+
+
+<!-- =========================
+     JAVASCRIPT MODULE
+========================== -->
+
+
+<script src="app.js"></script>
+
+
+
+<script src="assets/js/modules/planner.js"></script>
+
+
+
+<script src="assets/js/modules/analytics.js"></script>
+
+
+
+<script src="assets/js/modules/tweetgen.js"></script>
+
+
+
+<script src="assets/js/modules/dashboard.js"></script>
+
+
+
+<script src="assets/js/modules/content.js"></script>
+
+
+
+<script src="assets/js/modules/archive.js"></script>
+
+
+
+
+
+</body>
+
+</html>
