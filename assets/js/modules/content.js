@@ -24,10 +24,22 @@ const CONTENT_FORMAT_LABELS = {
     didyouknow: "💡 Did You Know?",
     story:      "📖 Behind the Story",
     funfact:    "🤯 Fun Fact",
-    todayago:   "📅 Today, 40 Years Ago"
+    todayago:   "📅 Today, 40 Years Ago",
+     choiceoftheday: "Choice of the Day"
 };
 
+const CHOICE_OF_THE_DAY_DEFAULT =
+     "CHOICE OF THE DAY\n\n" +
+     "Your pick, your song.\n" +
+     "Late 70s, 80s, or best of 90s - doesn't matter.\n" +
+     "Which track absolutely needs to be in our timeline?\n\n" +
+     "Drop it in the comments - best picks get featured this week.\n\n" +
+     "#70s #80s #90s #WeLove80s";
+
 function contentBuildTweet(title, artist, year, format, researchText){
+     if(format === "choiceoftheday" && (!researchText || researchText.trim() === "")){
+              return CHOICE_OF_THE_DAY_DEFAULT;
+     }
     const parts = [];
     if(title && artist){ parts.push(title + " - " + artist); }
     else if(title){ parts.push(title); }
@@ -64,6 +76,9 @@ function contentBuildPrompt(topic, format, title, artist, year){
         return base + "Write a short 'Today, 40 years ago' post about " + topicWord + " " + subject + ". What happened on this day in music/entertainment history? Start directly, no preamble.";
     }
     return base + "Write one engaging sentence about " + topicWord + " " + subject + ".";
+     if(format === "choiceoftheday"){
+              return "Write in English, max 3 sentences, playful and inviting for a retro music fan account. Write a 'Choice of the Day' call-to-action inviting followers to name their own favorite song from late 70s, 80s, or 90s in the comments, no genre or era restriction. Mention the best picks get featured. Start directly, no preamble.";
+     }
 }
 
 function contentGetGeminiKey(){
