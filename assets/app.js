@@ -21,6 +21,7 @@
   /* ---------- Live X-Verbindung (echt, kein Mock) ---------- */
 
   let xLive = { connected: false, username: null };
+  let ytLive = { connected: false, title: null };
 
   function renderXConnectStatus() {
     const el = document.getElementById("xConnectStatus");
@@ -64,8 +65,6 @@
   checkXConnection();
 
   /* ---------- Live YouTube-Verbindung (echt, kein Mock) ---------- */
-
-  let ytLive = { connected: false, title: null };
 
   function renderYtConnectStatus() {
     const el = document.getElementById("ytConnectStatus");
