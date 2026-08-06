@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control 5.0 — Prototyp</title>
+<meta name="description" content="Klickbarer Dashboard-Prototyp: Mission Control 5.0 — das Cockpit für Content Creator.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">MISSION <span>CONTROL</span></span>
+    </div>
+
+    <nav class="mainnav" id="mainnav">
+      <button class="nav-item active" data-view="dashboard">
+        <span class="nav-icon">◧</span> Dashboard
+      </button>
+      <button class="nav-item" data-view="analytics">
+        <span class="nav-icon">▤</span> Analytics
+      </button>
+      <button class="nav-item" data-view="content">
+        <span class="nav-icon">✶</span> KI-Content
+      </button>
+      <button class="nav-item" data-view="video">
+        <span class="nav-icon">▶</span> Video-Pipeline
+      </button>
+      <button class="nav-item" data-view="mobile">
+        <span class="nav-icon">▯</span> Mobile App
+      </button>
+      <button class="nav-item" data-view="publish">
+        <span class="nav-icon">⇧</span> Multi-Publish
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-label">Verbundene Kanäle</div>
+      <div class="platform-mini-list" id="platformMiniList"></div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">Übersicht</p>
+          <h1>Guten Tag 👋</h1>
+          <p>Alle sieben Kanäle auf einen Blick — Reichweite, Aktivität und was als Nächstes ansteht.</p>
+        </div>
+        <div class="status-chip"><span class="dot"></span> 7 Kanäle verbunden</div>
+      </div>
+
+      <div class="grid cols-3" style="margin-bottom:18px;">
+        <div class="card" id="kpiCards"></div>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="card-label">Plattform-Reichweite</div>
+          <div id="dashBars"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Letzte Aktivität</div>
+          <div class="activity-list" id="activityList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="view" id="view-analytics">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">Modul 01</p>
+          <h1>Analytics</h1>
+          <p>Follower-Wachstum, Reichweite und Top-Beiträge aus allen Kanälen — normalisiert und nebeneinander.</p>
+        </div>
+      </div>
+
+      <div class="grid cols-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-label">Plattform-Vergleich</div>
+          <div id="analyticsBars"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Reichweite — 7 Tage</div>
+          <canvas id="trendCanvas" width="480" height="220" style="width:100%;height:220px;"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Top-Beiträge (Spalten anklicken zum Sortieren)</div>
+        <table class="data-table" id="topPostsTable">
+          <thead>
+            <tr>
+              <th data-key="platform">Kanal</th>
+              <th data-key="title">Beitrag</th>
+              <th data-key="reach">Reichweite</th>
+              <th data-key="engagement">Engagement</th>
+              <th data-key="date">Datum</th>
+            </tr>
+          </thead>
+          <tbody id="topPostsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- KI-CONTENT -->
+    <section class="view" id="view-content">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">Modul 02</p>
+          <h1>KI-Content-Generierung</h1>
+          <p>Thema eingeben, Ton wählen, Kanäle auswählen — Mission Control schlägt passende Entwürfe vor.</p>
+        </div>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="field">
+            <label for="topicInput">Thema / Stichpunkt</label>
+            <input type="text" id="topicInput" placeholder="z. B. Mein neues Video-Setup" value="Mein neues Video-Setup">
+          </div>
+          <div class="field">
+            <label for="toneSelect">Tonalität</label>
+            <select id="toneSelect">
+              <option value="informativ">Informativ</option>
+              <option value="locker">Locker</option>
+              <option value="verkauf">Verkaufsstark</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Kanäle</label>
+            <div class="checkrow" id="contentPlatformChecks"></div>
+          </div>
+          <button class="btn btn-primary" id="generateBtn">✶ Entwürfe generieren</button>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Generierte Entwürfe</div>
+          <div id="draftsList">
+            <div class="empty-hint">Noch keine Entwürfe — links generieren.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDEO PIPELINE -->
+    <section class="view" id="view-video">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">Modul 03</p>
+          <h1>Video-Pipeline</h1>
+          <p>Ein Rohschnitt rein, ein Klick auf „Verarbeiten“ — automatischer Schnitt, Untertitel und Formatanpassung je Zielkanal.</p>
+        </div>
+        <button class="btn btn-primary" id="processBtn">▶ Video verarbeiten</button>
+      </div>
+
+      <div class="pipeline" id="pipelineSteps"></div>
+
+      <div class="card" id="exportCard" style="display:none;">
+        <div class="card-label">Export bereit für</div>
+        <div class="grid cols-6" id="exportThumbs"></div>
+      </div>
+    </section>
+
+    <!-- MOBILE APP -->
+    <section class="view" id="view-mobile">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">Modul 04</p>
+          <h1>Mobile App</h1>
+          <p>iOS &amp; Android: aufnehmen und hochladen, von überall — über WLAN oder Mobilfunk.</p>
+        </div>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="card-label">Verbindung</div>
+          <div class="toggle-row" style="margin-bottom:16px;">
+            <label class="switch">
+              <input type="checkbox" id="wifiToggle" checked>
+              <span class="slider"></span>
+            </label>
+            <span id="wifiLabel">WLAN aktiv — Upload mit voller Geschwindigkeit</span>
+          </div>
+          <p style="color:var(--muted); font-size:13px; line-height:1.6;">
+            Beim Wechsel auf Mobilfunk warnt die App vor großen Dateien und passt die Video-Qualität optional automatisch an, um Datenvolumen zu sparen. Der Upload läuft im Hintergrund weiter, auch bei kurzzeitigem Verbindungsabbruch.
+          </p>
+          <div class="card-label" style="margin-top:20px;">Push-Benachrichtigungen</div>
+          <div class="activity-list" id="mobileNotifs"></div>
+        </div>
+
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-status" id="phoneStatus">📶 WLAN</div>
+              <div class="phone-app-title">MISSION CONTROL</div>
+              <div class="upload-card">
+                <div class="fname">Video_export.mp4</div>
+                <div class="fmeta" id="phoneUploadMeta">WLAN · 72%</div>
+                <div class="bar-track"><div class="bar-fill" id="phoneProgress" style="width:72%; background:var(--cyan);"></div></div>
+              </div>
+              <div class="thumb-row">
+                <div class="thumb"></div>
+                <div class="thumb hot"></div>
+                <div class="thumb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MULTI-PUBLISH -->
+    <section class="view" id="view-publish">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">Modul 05</p>
+          <h1>Multi-Publish</h1>
+          <p>Einmal schreiben, planen, überall veröffentlichen.</p>
+        </div>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="field">
+            <label for="postText">Beitragstext</label>
+            <textarea id="postText" placeholder="Was möchtest du teilen?"></textarea>
+          </div>
+          <div class="field">
+            <label>Kanäle</label>
+            <div class="checkrow" id="publishPlatformChecks"></div>
+          </div>
+          <div class="field">
+            <label for="scheduleTime">Zeitpunkt</label>
+            <input type="datetime-local" id="scheduleTime">
+          </div>
+          <button class="btn btn-primary" id="scheduleBtn">⇧ Einplanen</button>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Warteschlange</div>
+          <div class="queue-list" id="queueList"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="proto-footer">
+      MISSION CONTROL 5.0 — Klickbarer Prototyp · Alle Daten sind Mock-Daten, kein echtes Backend.
+    </footer>
+
+  </main>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
