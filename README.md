@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mission Control 5.0 — Klickbarer Prototyp
 
 Statischer, rein clientseitiger Dashboard-Prototyp (kein Backend, keine echten API-Calls). Alle Daten in `assets/data.js` sind Mock-Daten.
@@ -18,3 +19,40 @@ Statischer, rein clientseitiger Dashboard-Prototyp (kein Backend, keine echten A
 3. Nach ca. 1–2 Minuten ist die Seite live unter **https://massim1701.github.io/mc5-tool/**
 
 Kein Build-Schritt nötig — reines HTML/CSS/JS, alle Pfade sind relativ und funktionieren unter dem Unterpfad `/mc5-tool/`.
+=======
+# Mission Control 5.0
+
+## Projekt
+
+**We ❤️ 80s -- Mission Control 5.0**
+
+Mission Control ist das zentrale Dashboard zur Planung, Erstellung und
+Verwaltung von Content für den We ❤️ 80s X-Account.
+
+## Projektstruktur
+
+    Mission_Control_5.0/
+    ├── index.html
+    ├── style.css
+    ├── app.js
+    ├── dashboard.json
+    ├── README.md
+    ├── assets/
+    ├── images/
+    └── icons/
+
+## Geplante Module
+
+-   Dashboard
+-   Content Planner
+-   Workflow
+-   Archive
+-   AI Library
+-   Video Finder
+-   Tweet Generator
+-   Analytics
+-   Settings
+
+Dieses Dokument beschreibt den aktuellen Projektaufbau und dient als
+Einstieg für die weitere Entwicklung.
+>>>>>>> f30d7154c6574dc5e3b397d9302f939d1ca45801
