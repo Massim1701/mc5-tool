@@ -6,6 +6,16 @@ module.exports = async (req, res) => {
   const clientSecret = process.env.X_CLIENT_SECRET;
   const { code, state, error } = req.query;
 
+  if (!clientId || !clientSecret) {
+    res.status(500).send(
+      `Umgebungsvariablen fehlen auf dieser Deployment: ` +
+      `X_CLIENT_ID ${clientId ? "vorhanden (Länge " + clientId.length + ")" : "FEHLT"}, ` +
+      `X_CLIENT_SECRET ${clientSecret ? "vorhanden (Länge " + clientSecret.length + ")" : "FEHLT"}. ` +
+      `Bitte in Vercel unter Settings → Environment Variables prüfen (Scope "Production" muss angehakt sein) und danach neu deployen.`
+    );
+    return;
+  }
+
   if (error) {
     res.status(400).send(`X hat die Anfrage abgelehnt: ${error}`);
     return;
