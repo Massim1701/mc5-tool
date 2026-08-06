@@ -184,7 +184,7 @@
   checkYtConnection();
 
   const initialHash = (location.hash || "").replace("#", "");
-  const validViews = ["dashboard", "analytics", "content", "video", "mobile", "publish"];
+  const validViews = ["dashboard", "analytics", "content", "video", "mobile", "publish", "xfeed"];
   if (validViews.includes(initialHash)) showView(initialHash);
 
   /* ---------- Dashboard: Verbindungsstatus je Plattform ---------- */
@@ -199,8 +199,9 @@
     el.innerHTML = PLATFORMS.map((p) => {
       const state = liveStatus[p.id] || "unset";
       const inner = PLATFORM_ICONS[p.id] || p.code;
+      const clickable = p.id === "x";
       return `
-        <div class="platform-status-item" title="${p.name}${state === "unset" ? " (noch keine Live-Anbindung)" : ""}">
+        <div class="platform-status-item" data-platform="${p.id}" title="${p.name}${state === "unset" ? " (noch keine Live-Anbindung)" : ""}" style="${clickable ? "cursor:pointer;" : ""}">
           <div class="platform-status-badge" style="color:${p.color}; border-color:${p.color}; font-size:18px;">
             ${inner}
             <span class="platform-status-indicator ${state}"></span>
@@ -209,7 +210,82 @@
         </div>
       `;
     }).join("");
+
+    const xItem = el.querySelector('[data-platform="x"]');
+    if (xItem) {
+      xItem.addEventListener("click", () => {
+        if (!xLive.connected) {
+          showView("dashboard");
+          const btn = document.getElementById("xConnectBtn");
+          if (btn) btn.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+        showView("xfeed");
+        loadXFeed();
+      });
+    }
   }
+
+  /* ---------- X-Feed-Ansicht (echte Tweets + 30-Tage-Statistik) ---------- */
+
+  async function loadXFeed() {
+    const listEl = document.getElementById("xFeedTweetList");
+    const statsEl = document.getElementById("xFeedStats");
+    const titleEl = document.getElementById("xFeedTitle");
+    if (!listEl || !statsEl) return;
+    listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Lädt …</p>`;
+    statsEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Lädt …</p>`;
+
+    try {
+      const r = await fetch("/api/x/recent");
+      const data = await r.json();
+      if (!r.ok) {
+        listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Fehler: ${JSON.stringify(data.error || data)}</p>`;
+        statsEl.innerHTML = "";
+        return;
+      }
+
+      if (titleEl) titleEl.textContent = `Mein X-Feed — @${data.username}`;
+
+      if (!data.tweets.length) {
+        listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Keine Tweets in den letzten 30 Tagen gefunden.</p>`;
+      } else {
+        listEl.innerHTML = data.tweets.map((t) => {
+          const date = new Date(t.createdAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+          const m = t.metrics || {};
+          return `
+            <div style="padding:12px 0; border-bottom:1px solid var(--line);">
+              <p style="margin:0 0 8px 0; font-size:14px; line-height:1.5;">${(t.text || "").replace(/</g, "&lt;")}</p>
+              <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted);">
+                <span>${date}</span>
+                <span>❤️ ${m.like_count ?? 0}</span>
+                <span>🔁 ${m.retweet_count ?? 0}</span>
+                <span>💬 ${m.reply_count ?? 0}</span>
+                <span>👁️ ${m.impression_count ?? 0}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const t = data.totals || {};
+      statsEl.innerHTML = `
+        <div class="grid cols-2" style="gap:12px;">
+          <div class="card" style="background:var(--panel-2);"><div class="card-label">Tweets</div><div class="kpi-value cyan">${data.tweetCount}</div></div>
+          <div class="card" style="background:var(--panel-2);"><div class="card-label">Impressions</div><div class="kpi-value cyan">${(t.impressions || 0).toLocaleString("de-DE")}</div></div>
+          <div class="card" style="background:var(--panel-2);"><div class="card-label">Likes</div><div class="kpi-value orange">${(t.likes || 0).toLocaleString("de-DE")}</div></div>
+          <div class="card" style="background:var(--panel-2);"><div class="card-label">Retweets</div><div class="kpi-value orange">${(t.retweets || 0).toLocaleString("de-DE")}</div></div>
+          <div class="card" style="background:var(--panel-2); grid-column: span 2;"><div class="card-label">Replies</div><div class="kpi-value cyan">${(t.replies || 0).toLocaleString("de-DE")}</div></div>
+        </div>
+      `;
+    } catch (e) {
+      listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Fehler beim Laden: ${e.message}</p>`;
+      statsEl.innerHTML = "";
+    }
+  }
+
+  const xFeedBackBtn = document.getElementById("xFeedBackBtn");
+  if (xFeedBackBtn) xFeedBackBtn.addEventListener("click", () => showView("dashboard"));
 
   /* ---------- Sidebar platform mini list ---------- */
 

@@ -275,6 +275,29 @@
       </div>
     </section>
 
+    <!-- X FEED (echte Daten, kein Mock) -->
+    <section class="view" id="view-xfeed">
+      <div class="topbar">
+        <div>
+          <p class="topbar-kicker">𝕏 Live</p>
+          <h1 id="xFeedTitle">Mein X-Feed</h1>
+          <p>Deine letzten Tweets und die Statistik der letzten 30 Tage — live von X.</p>
+        </div>
+        <button class="btn" id="xFeedBackBtn" style="background:var(--panel-2); color:var(--text);">← Zurück zum Dashboard</button>
+      </div>
+
+      <div id="xFeedContent" class="grid cols-2">
+        <div class="card">
+          <div class="card-label">Letzte Tweets</div>
+          <div id="xFeedTweetList"><p style="color:var(--muted); font-size:13px;">Lädt …</p></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Statistik — letzte 30 Tage</div>
+          <div id="xFeedStats"><p style="color:var(--muted); font-size:13px;">Lädt …</p></div>
+        </div>
+      </div>
+    </section>
+
     <footer class="proto-footer">
       MISSION CONTROL 5.0 — Klickbarer Prototyp · Alle Daten sind Mock-Daten, kein echtes Backend.
     </footer>
