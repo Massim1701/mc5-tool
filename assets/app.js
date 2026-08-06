@@ -38,6 +38,7 @@
       const btn = document.getElementById("xConnectBtn");
       if (btn) btn.addEventListener("click", () => { window.location.href = "/api/auth/x/login"; });
     }
+    renderPlatformStatus();
   }
 
   async function checkXConnection() {
@@ -83,6 +84,7 @@
       if (btn) btn.addEventListener("click", () => { window.location.href = "/api/auth/youtube/login"; });
     }
     renderYtUploadForm();
+    renderPlatformStatus();
   }
 
   function renderYtUploadForm() {
@@ -166,6 +168,29 @@
   const initialHash = (location.hash || "").replace("#", "");
   const validViews = ["dashboard", "analytics", "content", "video", "mobile", "publish"];
   if (validViews.includes(initialHash)) showView(initialHash);
+
+  /* ---------- Dashboard: Verbindungsstatus je Plattform ---------- */
+
+  function renderPlatformStatus() {
+    const el = document.getElementById("platformStatusList");
+    if (!el) return;
+    const liveStatus = {
+      x: xLive.connected ? "on" : "off",
+      youtube: ytLive.connected ? "on" : "off",
+    };
+    el.innerHTML = PLATFORMS.map((p) => {
+      const state = liveStatus[p.id] || "unset";
+      return `
+        <div class="platform-status-item" title="${p.name}${state === "unset" ? " (noch keine Live-Anbindung)" : ""}">
+          <div class="platform-status-badge" style="color:${p.color}; border-color:${p.color};">
+            ${p.code}
+            <span class="platform-status-indicator ${state}"></span>
+          </div>
+          <span class="platform-status-label">${p.name}</span>
+        </div>
+      `;
+    }).join("");
+  }
 
   /* ---------- Sidebar platform mini list ---------- */
 
