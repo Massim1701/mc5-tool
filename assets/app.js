@@ -62,6 +62,107 @@
   renderXConnectStatus();
   checkXConnection();
 
+  /* ---------- Live YouTube-Verbindung (echt, kein Mock) ---------- */
+
+  let ytLive = { connected: false, title: null };
+
+  function renderYtConnectStatus() {
+    const el = document.getElementById("ytConnectStatus");
+    if (!el) return;
+    if (ytLive.connected) {
+      el.innerHTML = `
+        <span class="status-chip"><span class="dot" style="background:var(--red, #ff0000);"></span> Verbunden als ${ytLive.title}</span>
+        <span style="color:var(--muted); font-size:13px;">${ytLive.subscriberCount != null ? Number(ytLive.subscriberCount).toLocaleString("de-DE") + " Abonnenten (live)" : ""}</span>
+      `;
+    } else {
+      el.innerHTML = `
+        <button class="btn btn-primary" id="ytConnectBtn">▶ Mit YouTube verbinden</button>
+        <span style="color:var(--muted); font-size:13px;">Verbindet deinen echten YouTube-Kanal per OAuth 2.0.</span>
+      `;
+      const btn = document.getElementById("ytConnectBtn");
+      if (btn) btn.addEventListener("click", () => { window.location.href = "/api/auth/youtube/login"; });
+    }
+    renderYtUploadForm();
+  }
+
+  function renderYtUploadForm() {
+    const el = document.getElementById("ytUploadArea");
+    if (!el) return;
+    if (!ytLive.connected) {
+      el.innerHTML = `<p style="color:var(--muted); font-size:13px;">Erst verbinden, dann kannst du hier ein Testvideo hochladen.</p>`;
+      return;
+    }
+    el.innerHTML = `
+      <div class="field">
+        <label for="ytFile">Videodatei (max. 20&nbsp;MB, nur zum Testen)</label>
+        <input type="file" id="ytFile" accept="video/*">
+      </div>
+      <div class="field">
+        <label for="ytTitle">Titel</label>
+        <input type="text" id="ytTitle" value="Mission Control Testvideo">
+      </div>
+      <div class="field">
+        <label for="ytPrivacy">Sichtbarkeit</label>
+        <select id="ytPrivacy">
+          <option value="private">Privat (nur du)</option>
+          <option value="unlisted">Nicht gelistet (nur mit Link)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="ytUploadBtn">⇧ Testvideo hochladen</button>
+      <div id="ytUploadResult" style="margin-top:10px; font-size:13px; color:var(--muted);"></div>
+    `;
+    const uploadBtn = document.getElementById("ytUploadBtn");
+    uploadBtn.addEventListener("click", async () => {
+      const fileInput = document.getElementById("ytFile");
+      const title = document.getElementById("ytTitle").value || "Mission Control Testvideo";
+      const privacy = document.getElementById("ytPrivacy").value;
+      const resultEl = document.getElementById("ytUploadResult");
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) {
+        resultEl.textContent = "Bitte zuerst eine Videodatei auswählen.";
+        return;
+      }
+      uploadBtn.disabled = true;
+      resultEl.textContent = "Lädt hoch …";
+      try {
+        const params = new URLSearchParams({ title, privacy, description: "Hochgeladen als Test über Mission Control 5.0" });
+        const r = await fetch(`/api/youtube/upload?${params.toString()}`, {
+          method: "POST",
+          headers: { "Content-Type": file.type || "video/mp4" },
+          body: file,
+        });
+        const data = await r.json();
+        if (r.ok && data.uploaded) {
+          resultEl.innerHTML = `Hochgeladen (${data.privacyStatus}): <a href="${data.url}" target="_blank" style="color:var(--cyan);">${data.url}</a>`;
+        } else {
+          resultEl.textContent = "Fehler: " + JSON.stringify(data.error || data);
+        }
+      } catch (e) {
+        resultEl.textContent = "Fehler beim Upload: " + e.message;
+      } finally {
+        uploadBtn.disabled = false;
+      }
+    });
+  }
+
+  async function checkYtConnection() {
+    try {
+      const r = await fetch("/api/youtube/me");
+      if (r.ok) {
+        const data = await r.json();
+        ytLive = { connected: true, title: data.title, subscriberCount: data.subscriberCount };
+      } else {
+        ytLive = { connected: false };
+      }
+    } catch (e) {
+      ytLive = { connected: false };
+    }
+    renderYtConnectStatus();
+  }
+
+  renderYtConnectStatus();
+  checkYtConnection();
+
   const initialHash = (location.hash || "").replace("#", "");
   const validViews = ["dashboard", "analytics", "content", "video", "mobile", "publish"];
   if (validViews.includes(initialHash)) showView(initialHash);
