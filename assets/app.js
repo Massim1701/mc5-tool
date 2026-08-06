@@ -355,6 +355,52 @@
   const xFeedBackBtn = document.getElementById("xFeedBackBtn");
   if (xFeedBackBtn) xFeedBackBtn.addEventListener("click", () => showView("dashboard"));
 
+  const xFeedComposeText = document.getElementById("xFeedComposeText");
+  const xFeedComposeCount = document.getElementById("xFeedComposeCount");
+  const xFeedComposeBtn = document.getElementById("xFeedComposeBtn");
+  const xFeedComposeResult = document.getElementById("xFeedComposeResult");
+
+  if (xFeedComposeText) {
+    xFeedComposeText.addEventListener("input", () => {
+      xFeedComposeCount.textContent = `${xFeedComposeText.value.length} / 280`;
+    });
+  }
+
+  if (xFeedComposeBtn) {
+    xFeedComposeBtn.addEventListener("click", async () => {
+      const text = xFeedComposeText.value.trim();
+      if (!text) {
+        xFeedComposeResult.textContent = "Bitte zuerst einen Text eingeben.";
+        return;
+      }
+      xFeedComposeBtn.disabled = true;
+      const original = xFeedComposeBtn.textContent;
+      xFeedComposeBtn.textContent = "Poste …";
+      xFeedComposeResult.textContent = "";
+      try {
+        const r = await fetch("/api/x/tweet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        const data = await r.json();
+        if (r.ok && data.posted) {
+          xFeedComposeResult.textContent = `Gepostet (ID ${data.tweet.id}).`;
+          xFeedComposeText.value = "";
+          xFeedComposeCount.textContent = "0 / 280";
+          loadXFeed();
+        } else {
+          xFeedComposeResult.textContent = "Fehler: " + JSON.stringify(data.error || data);
+        }
+      } catch (e) {
+        xFeedComposeResult.textContent = "Fehler beim Posten: " + e.message;
+      } finally {
+        xFeedComposeBtn.disabled = false;
+        xFeedComposeBtn.textContent = original;
+      }
+    });
+  }
+
   window.addEventListener("resize", () => {
     const canvas = document.getElementById("xFeedTrendCanvas");
     const view = document.getElementById("view-xfeed");

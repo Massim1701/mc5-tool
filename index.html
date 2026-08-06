@@ -286,6 +286,18 @@
         <button class="btn" id="xFeedBackBtn" style="background:var(--panel-2); color:var(--txt);">← Zurück zum Dashboard</button>
       </div>
 
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-label">Neuer Tweet</div>
+        <div class="field">
+          <textarea id="xFeedComposeText" maxlength="280" placeholder="Was gibt's Neues?"></textarea>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <span id="xFeedComposeCount" style="color:var(--muted); font-size:12px;">0 / 280</span>
+          <button class="btn btn-primary" id="xFeedComposeBtn">𝕏 Tweeten</button>
+        </div>
+        <div id="xFeedComposeResult" style="margin-top:8px; font-size:13px; color:var(--muted);"></div>
+      </div>
+
       <div id="xFeedContent" class="grid cols-2">
         <div class="card">
           <div class="card-label">Letzte Tweets</div>
