@@ -286,13 +286,45 @@
         <button class="btn" id="xFeedBackBtn" style="background:var(--panel-2); color:var(--txt);">← Zurück zum Dashboard</button>
       </div>
 
-      <div class="card" style="margin-bottom:18px;">
+      <div class="card" style="margin-bottom:18px; position:relative;">
         <div class="card-label">Neuer Tweet</div>
         <div class="field">
           <textarea id="xFeedComposeText" maxlength="280" placeholder="Was gibt's Neues?"></textarea>
         </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+
+        <div id="xFeedImagePreviewWrap" style="display:none; margin-bottom:12px;">
+          <img id="xFeedImagePreview" style="max-width:220px; max-height:160px; border-radius:8px; border:1px solid var(--line);">
+          <button class="chip-btn" id="xFeedImageRemoveBtn" style="margin-left:10px;">✕ Bild entfernen</button>
+        </div>
+
+        <div id="xFeedPollWrap" style="display:none; margin-bottom:14px;">
+          <div class="field"><input type="text" class="xFeedPollOption" placeholder="Option 1" maxlength="25"></div>
+          <div class="field"><input type="text" class="xFeedPollOption" placeholder="Option 2" maxlength="25"></div>
+          <div class="field"><input type="text" class="xFeedPollOption" placeholder="Option 3 (optional)" maxlength="25"></div>
+          <div class="field"><input type="text" class="xFeedPollOption" placeholder="Option 4 (optional)" maxlength="25"></div>
+          <div class="field">
+            <label for="xFeedPollDuration">Laufzeit</label>
+            <select id="xFeedPollDuration">
+              <option value="60">1 Stunde</option>
+              <option value="1440" selected>1 Tag</option>
+              <option value="4320">3 Tage</option>
+              <option value="10080">7 Tage</option>
+            </select>
+          </div>
+          <button class="chip-btn" id="xFeedPollRemoveBtn">✕ Umfrage entfernen</button>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div style="display:flex; gap:8px; align-items:center; position:relative;">
+            <button class="chip-btn" id="xFeedEmojiBtn" type="button" title="Emoji einfügen">🙂</button>
+            <div id="xFeedEmojiPicker" style="display:none; position:absolute; top:36px; left:0; z-index:10; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:8px; width:220px; display:grid; grid-template-columns:repeat(8,1fr); gap:4px;"></div>
+            <label class="chip-btn" for="xFeedImageInput" style="cursor:pointer;" title="Bild anhängen">🖼️</label>
+            <input type="file" id="xFeedImageInput" accept="image/*" style="display:none;">
+            <button class="chip-btn" id="xFeedPollBtn" type="button" title="Umfrage anhängen">📊</button>
+          </div>
           <span id="xFeedComposeCount" style="color:var(--muted); font-size:12px;">0 / 280</span>
+        </div>
+        <div style="margin-top:12px;">
           <button class="btn btn-primary" id="xFeedComposeBtn">𝕏 Tweeten</button>
         </div>
         <div id="xFeedComposeResult" style="margin-top:8px; font-size:13px; color:var(--muted);"></div>

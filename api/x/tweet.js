@@ -28,13 +28,31 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const payload = { text };
+
+  // Medien anhängen (X erlaubt entweder Medien ODER eine Umfrage, nicht beides).
+  if (Array.isArray(body.media_ids) && body.media_ids.length > 0) {
+    payload.media = { media_ids: body.media_ids.slice(0, 4) };
+  } else if (body.poll && Array.isArray(body.poll.options) && body.poll.options.length >= 2) {
+    const options = body.poll.options
+      .map((o) => (o || "").toString().trim())
+      .filter(Boolean)
+      .slice(0, 4);
+    if (options.length >= 2) {
+      payload.poll = {
+        options,
+        duration_minutes: Math.min(Math.max(parseInt(body.poll.duration_minutes, 10) || 1440, 5), 10080),
+      };
+    }
+  }
+
   const apiRes = await fetch("https://api.x.com/2/tweets", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify(payload),
   });
 
   const data = await apiRes.json();

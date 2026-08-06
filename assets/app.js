@@ -366,6 +366,75 @@
     });
   }
 
+  /* -- Emoji-Picker -- */
+  const EMOJI_SET = ["😀","😂","😍","😎","🤔","😅","🙌","👍","🔥","🎉","🚀","💡","❤️","👀","😢","😡","🙏","✅","⚡","📈","📸","🎬","📅","💬","😴","🤝","🥳","😇","🤩","💯"];
+  const emojiBtn = document.getElementById("xFeedEmojiBtn");
+  const emojiPicker = document.getElementById("xFeedEmojiPicker");
+  if (emojiBtn && emojiPicker) {
+    emojiPicker.innerHTML = EMOJI_SET.map((e) => `<button type="button" class="emoji-opt" style="background:none; border:none; font-size:18px; cursor:pointer; padding:4px;">${e}</button>`).join("");
+    emojiBtn.addEventListener("click", () => {
+      emojiPicker.style.display = emojiPicker.style.display === "grid" ? "none" : "grid";
+    });
+    emojiPicker.querySelectorAll(".emoji-opt").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const pos = xFeedComposeText.selectionStart || xFeedComposeText.value.length;
+        const val = xFeedComposeText.value;
+        xFeedComposeText.value = val.slice(0, pos) + btn.textContent + val.slice(pos);
+        xFeedComposeText.focus();
+        xFeedComposeText.selectionStart = xFeedComposeText.selectionEnd = pos + btn.textContent.length;
+        xFeedComposeCount.textContent = `${xFeedComposeText.value.length} / 280`;
+        emojiPicker.style.display = "none";
+      });
+    });
+    document.addEventListener("click", (e) => {
+      if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) emojiPicker.style.display = "none";
+    });
+  }
+
+  /* -- Bild-Anhang -- */
+  const imageInput = document.getElementById("xFeedImageInput");
+  const imagePreviewWrap = document.getElementById("xFeedImagePreviewWrap");
+  const imagePreview = document.getElementById("xFeedImagePreview");
+  const imageRemoveBtn = document.getElementById("xFeedImageRemoveBtn");
+  const pollWrap = document.getElementById("xFeedPollWrap");
+  const pollBtn = document.getElementById("xFeedPollBtn");
+  const pollRemoveBtn = document.getElementById("xFeedPollRemoveBtn");
+  let selectedImageFile = null;
+
+  function clearImage() {
+    selectedImageFile = null;
+    if (imageInput) imageInput.value = "";
+    if (imagePreviewWrap) imagePreviewWrap.style.display = "none";
+  }
+  function clearPoll() {
+    if (pollWrap) pollWrap.style.display = "none";
+    if (pollWrap) pollWrap.querySelectorAll(".xFeedPollOption").forEach((i) => (i.value = ""));
+  }
+
+  if (imageInput) {
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files && imageInput.files[0];
+      if (!file) return;
+      clearPoll(); // X erlaubt entweder Bild ODER Umfrage
+      selectedImageFile = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        imagePreview.src = reader.result;
+        imagePreviewWrap.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  if (imageRemoveBtn) imageRemoveBtn.addEventListener("click", clearImage);
+
+  if (pollBtn) {
+    pollBtn.addEventListener("click", () => {
+      clearImage(); // X erlaubt entweder Bild ODER Umfrage
+      pollWrap.style.display = pollWrap.style.display === "none" ? "block" : "none";
+    });
+  }
+  if (pollRemoveBtn) pollRemoveBtn.addEventListener("click", clearPoll);
+
   if (xFeedComposeBtn) {
     xFeedComposeBtn.addEventListener("click", async () => {
       const text = xFeedComposeText.value.trim();
@@ -373,21 +442,66 @@
         xFeedComposeResult.textContent = "Bitte zuerst einen Text eingeben.";
         return;
       }
+
+      const pollActive = pollWrap && pollWrap.style.display === "block";
+      let pollOptions = [];
+      if (pollActive) {
+        pollOptions = [...pollWrap.querySelectorAll(".xFeedPollOption")]
+          .map((i) => i.value.trim())
+          .filter(Boolean);
+        if (pollOptions.length < 2) {
+          xFeedComposeResult.textContent = "Umfrage braucht mindestens 2 Optionen.";
+          return;
+        }
+      }
+
       xFeedComposeBtn.disabled = true;
       const original = xFeedComposeBtn.textContent;
-      xFeedComposeBtn.textContent = "Poste …";
       xFeedComposeResult.textContent = "";
+
       try {
+        let mediaIds = [];
+        if (selectedImageFile) {
+          xFeedComposeBtn.textContent = "Lade Bild hoch …";
+          const mediaRes = await fetch("/api/x/media", {
+            method: "POST",
+            headers: { "Content-Type": selectedImageFile.type || "image/jpeg" },
+            body: selectedImageFile,
+          });
+          const mediaData = await mediaRes.json();
+          if (!mediaRes.ok || !mediaData.uploaded) {
+            xFeedComposeResult.textContent =
+              "Bild-Upload fehlgeschlagen: " + JSON.stringify(mediaData.error || mediaData) +
+              (mediaData.hint ? " — " + mediaData.hint : "");
+            xFeedComposeBtn.disabled = false;
+            xFeedComposeBtn.textContent = original;
+            return;
+          }
+          mediaIds = [mediaData.mediaId];
+        }
+
+        xFeedComposeBtn.textContent = "Poste …";
+        const payload = { text };
+        if (mediaIds.length) payload.media_ids = mediaIds;
+        if (pollActive) {
+          payload.poll = {
+            options: pollOptions,
+            duration_minutes: parseInt(document.getElementById("xFeedPollDuration").value, 10),
+          };
+        }
+
         const r = await fetch("/api/x/tweet", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify(payload),
         });
         const data = await r.json();
         if (r.ok && data.posted) {
           xFeedComposeResult.textContent = `Gepostet (ID ${data.tweet.id}).`;
           xFeedComposeText.value = "";
           xFeedComposeCount.textContent = "0 / 280";
+          clearImage();
+          clearPoll();
           loadXFeed();
         } else {
           xFeedComposeResult.textContent = "Fehler: " + JSON.stringify(data.error || data);
