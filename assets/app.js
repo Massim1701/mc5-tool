@@ -226,18 +226,79 @@
     }
   }
 
-  /* ---------- X-Feed-Ansicht (echte Tweets + 30-Tage-Statistik) ---------- */
+  /* ---------- X-Feed-Ansicht (echte Tweets + Zeitraum-Statistik) ---------- */
 
-  async function loadXFeed() {
+  let xFeedRangeDays = 7;
+  let xFeedLastSeries = null;
+
+  function drawGenericTrend(canvas, series, color) {
+    if (!canvas) return;
+    canvas.width = canvas.clientWidth || canvas.width;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height;
+    const values = series.map((s) => s.value);
+    const max = Math.max(1, ...values) * 1.15;
+    const pad = 24;
+
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.strokeStyle = "#26305a";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 3; i++) {
+      const y = pad + (i * (h - pad * 2)) / 3;
+      ctx.beginPath();
+      ctx.moveTo(pad, y);
+      ctx.lineTo(w - pad, y);
+      ctx.stroke();
+    }
+
+    if (values.length < 2) return;
+
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    values.forEach((v, i) => {
+      const x = pad + (i * (w - pad * 2)) / (values.length - 1);
+      const y = h - pad - (v / max) * (h - pad * 2);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    ctx.lineTo(w - pad, h - pad);
+    ctx.lineTo(pad, h - pad);
+    ctx.closePath();
+    ctx.fillStyle = color + "18";
+    ctx.fill();
+
+    ctx.fillStyle = color;
+    values.forEach((v, i) => {
+      const x = pad + (i * (w - pad * 2)) / (values.length - 1);
+      const y = h - pad - (v / max) * (h - pad * 2);
+      ctx.beginPath();
+      ctx.arc(x, y, values.length > 40 ? 1.5 : 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  async function loadXFeed(days) {
+    if (days) xFeedRangeDays = days;
     const listEl = document.getElementById("xFeedTweetList");
     const statsEl = document.getElementById("xFeedStats");
+    const statsLabelEl = document.getElementById("xFeedStatsLabel");
     const titleEl = document.getElementById("xFeedTitle");
+    const canvas = document.getElementById("xFeedTrendCanvas");
     if (!listEl || !statsEl) return;
+
+    document.querySelectorAll("#xFeedRangeButtons .chip-btn").forEach((b) => {
+      b.classList.toggle("active", parseInt(b.dataset.days, 10) === xFeedRangeDays);
+    });
+    if (statsLabelEl) statsLabelEl.textContent = `Statistik — letzte ${xFeedRangeDays} Tage`;
+
     listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Lädt …</p>`;
     statsEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Lädt …</p>`;
 
     try {
-      const r = await fetch("/api/x/recent");
+      const r = await fetch(`/api/x/recent?days=${xFeedRangeDays}`);
       const data = await r.json();
       if (!r.ok) {
         listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Fehler: ${JSON.stringify(data.error || data)}</p>`;
@@ -248,7 +309,7 @@
       if (titleEl) titleEl.textContent = `Mein X-Feed — @${data.username}`;
 
       if (!data.tweets.length) {
-        listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Keine Tweets in den letzten 30 Tagen gefunden.</p>`;
+        listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Keine Tweets in diesem Zeitraum gefunden.</p>`;
       } else {
         listEl.innerHTML = data.tweets.map((t) => {
           const date = new Date(t.createdAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -278,14 +339,29 @@
           <div class="card" style="background:var(--panel-2); grid-column: span 2;"><div class="card-label">Replies</div><div class="kpi-value cyan">${(t.replies || 0).toLocaleString("de-DE")}</div></div>
         </div>
       `;
+
+      xFeedLastSeries = (data.dailySeries || []).map((d) => ({ value: d.impressions }));
+      drawGenericTrend(canvas, xFeedLastSeries, "#00e5c7");
     } catch (e) {
       listEl.innerHTML = `<p style="color:var(--muted); font-size:13px;">Fehler beim Laden: ${e.message}</p>`;
       statsEl.innerHTML = "";
     }
   }
 
+  document.querySelectorAll("#xFeedRangeButtons .chip-btn").forEach((btn) => {
+    btn.addEventListener("click", () => loadXFeed(parseInt(btn.dataset.days, 10)));
+  });
+
   const xFeedBackBtn = document.getElementById("xFeedBackBtn");
   if (xFeedBackBtn) xFeedBackBtn.addEventListener("click", () => showView("dashboard"));
+
+  window.addEventListener("resize", () => {
+    const canvas = document.getElementById("xFeedTrendCanvas");
+    const view = document.getElementById("view-xfeed");
+    if (canvas && xFeedLastSeries && view && view.classList.contains("active")) {
+      drawGenericTrend(canvas, xFeedLastSeries, "#00e5c7");
+    }
+  });
 
   /* ---------- Sidebar platform mini list ---------- */
 

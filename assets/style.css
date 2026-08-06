@@ -400,6 +400,20 @@ table.data-table tr:last-child td { border-bottom: none; }
 .field textarea { min-height: 90px; resize: vertical; }
 
 .checkrow { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.chip-btn {
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.chip-btn:hover { border-color: var(--cyan); color: var(--txt); }
+.chip-btn.active { background: var(--cyan); color: #06231f; border-color: var(--cyan); }
 .check-pill {
   display: inline-flex;
   align-items: center;
