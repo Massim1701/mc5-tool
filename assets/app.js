@@ -18,6 +18,50 @@
     btn.addEventListener("click", () => showView(btn.dataset.view));
   });
 
+  /* ---------- Live X-Verbindung (echt, kein Mock) ---------- */
+
+  let xLive = { connected: false, username: null };
+
+  function renderXConnectStatus() {
+    const el = document.getElementById("xConnectStatus");
+    if (!el) return;
+    if (xLive.connected) {
+      el.innerHTML = `
+        <span class="status-chip"><span class="dot" style="background:var(--cyan);"></span> Verbunden als @${xLive.username}</span>
+        <span style="color:var(--muted); font-size:13px;">${xLive.followers != null ? xLive.followers.toLocaleString("de-DE") + " Follower (live)" : ""}</span>
+      `;
+    } else {
+      el.innerHTML = `
+        <button class="btn btn-primary" id="xConnectBtn">𝕏 Mit X verbinden</button>
+        <span style="color:var(--muted); font-size:13px;">Verbindet deinen echten X-Account per OAuth 2.0.</span>
+      `;
+      const btn = document.getElementById("xConnectBtn");
+      if (btn) btn.addEventListener("click", () => { window.location.href = "/api/auth/x/login"; });
+    }
+  }
+
+  async function checkXConnection() {
+    try {
+      const r = await fetch("/api/x/me");
+      if (r.ok) {
+        const data = await r.json();
+        xLive = {
+          connected: true,
+          username: data.username,
+          followers: data.public_metrics ? data.public_metrics.followers_count : null,
+        };
+      } else {
+        xLive = { connected: false };
+      }
+    } catch (e) {
+      xLive = { connected: false };
+    }
+    renderXConnectStatus();
+  }
+
+  renderXConnectStatus();
+  checkXConnection();
+
   const initialHash = (location.hash || "").replace("#", "");
   const validViews = ["dashboard", "analytics", "content", "video", "mobile", "publish"];
   if (validViews.includes(initialHash)) showView(initialHash);
@@ -323,13 +367,39 @@
   }
   renderQueue();
 
-  document.getElementById("scheduleBtn").addEventListener("click", () => {
+  document.getElementById("scheduleBtn").addEventListener("click", async () => {
     const text = document.getElementById("postText").value.trim();
     const time = document.getElementById("scheduleTime").value;
     const selected = [...document.querySelectorAll("#publishPlatformChecks input:checked")].map((i) => i.value);
     if (selected.length === 0) return;
+
+    let xResultNote = "";
+    if (selected.includes("x") && xLive.connected && text) {
+      const btn = document.getElementById("scheduleBtn");
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Poste auf X …";
+      try {
+        const r = await fetch("/api/x/tweet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        const data = await r.json();
+        if (r.ok && data.posted) {
+          xResultNote = ` · echt live auf X gepostet (ID ${data.tweet.id})`;
+        } else {
+          xResultNote = ` · X-Post fehlgeschlagen: ${(data.error && data.error.detail) || JSON.stringify(data.error) || "unbekannter Fehler"}`;
+        }
+      } catch (e) {
+        xResultNote = " · X-Post fehlgeschlagen (Netzwerkfehler)";
+      }
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+
     const queue = loadQueue();
-    queue.unshift({ text, time, platforms: selected, status: "planned" });
+    queue.unshift({ text: text + xResultNote, time, platforms: selected, status: "planned" });
     saveQueue(queue);
     document.getElementById("postText").value = "";
     renderQueue();
