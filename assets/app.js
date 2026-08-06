@@ -18,11 +18,24 @@
     btn.addEventListener("click", () => showView(btn.dataset.view));
   });
 
-  /* ---------- Plattform-Logos (echte SVG-Icons statt Text/Emoji) ---------- */
+  /* ---------- Plattform-Logos (Font Awesome Brand-Icons) ---------- */
 
-  const ICON_X = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.15em;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
-
-  const ICON_YOUTUBE = `<svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-0.15em;"><path fill="#FF0000" d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.376.505A3.02 3.02 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.02 3.02 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.376-.505a3.02 3.02 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12z"/></svg>`;
+  const ICON_X = `<i class="fa-brands fa-x-twitter" style="font-size:1em;"></i>`;
+  const ICON_YOUTUBE = `<i class="fa-brands fa-youtube" style="font-size:1em;"></i>`;
+  const ICON_INSTAGRAM = `<i class="fa-brands fa-instagram" style="font-size:1em;"></i>`;
+  const ICON_FACEBOOK = `<i class="fa-brands fa-facebook" style="font-size:1em;"></i>`;
+  const ICON_TIKTOK = `<i class="fa-brands fa-tiktok" style="font-size:1em;"></i>`;
+  const ICON_PINTEREST = `<i class="fa-brands fa-pinterest" style="font-size:1em;"></i>`;
+  const ICON_SNAPCHAT = `<i class="fa-brands fa-snapchat" style="font-size:1em;"></i>`;
+  const PLATFORM_ICONS = {
+    x: ICON_X,
+    instagram: ICON_INSTAGRAM,
+    facebook: ICON_FACEBOOK,
+    tiktok: ICON_TIKTOK,
+    youtube: ICON_YOUTUBE,
+    pinterest: ICON_PINTEREST,
+    snapchat: ICON_SNAPCHAT,
+  };
 
   /* ---------- Live X-Verbindung (echt, kein Mock) ---------- */
 
@@ -183,10 +196,9 @@
       x: xLive.connected ? "on" : "off",
       youtube: ytLive.connected ? "on" : "off",
     };
-    const liveIcons = { x: ICON_X, youtube: ICON_YOUTUBE };
     el.innerHTML = PLATFORMS.map((p) => {
       const state = liveStatus[p.id] || "unset";
-      const inner = liveIcons[p.id] || p.code;
+      const inner = PLATFORM_ICONS[p.id] || p.code;
       return `
         <div class="platform-status-item" title="${p.name}${state === "unset" ? " (noch keine Live-Anbindung)" : ""}">
           <div class="platform-status-badge" style="color:${p.color}; border-color:${p.color}; font-size:18px;">
@@ -208,7 +220,7 @@
     el.style.color = p.color;
     el.style.borderColor = p.color;
     el.title = p.name;
-    el.textContent = p.code;
+    el.innerHTML = PLATFORM_ICONS[p.id] || p.code;
     platformMiniList.appendChild(el);
   });
 
