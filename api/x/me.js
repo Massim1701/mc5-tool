@@ -21,5 +21,6 @@ module.exports = async (req, res) => {
   }
 
   const data = await apiRes.json();
-  res.status(200).json({ connected: true, ...data });
+  // X liefert das Profil verschachtelt unter "data" — hier flach machen.
+  res.status(200).json({ connected: true, ...data.data });
 };
