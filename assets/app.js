@@ -18,6 +18,12 @@
     btn.addEventListener("click", () => showView(btn.dataset.view));
   });
 
+  /* ---------- Plattform-Logos (echte SVG-Icons statt Text/Emoji) ---------- */
+
+  const ICON_X = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.15em;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+
+  const ICON_YOUTUBE = `<svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-0.15em;"><path fill="#FF0000" d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.376.505A3.02 3.02 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.02 3.02 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.376-.505a3.02 3.02 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12z"/></svg>`;
+
   /* ---------- Live X-Verbindung (echt, kein Mock) ---------- */
 
   let xLive = { connected: false, username: null };
@@ -28,12 +34,12 @@
     if (!el) return;
     if (xLive.connected) {
       el.innerHTML = `
-        <span class="status-chip"><span class="dot" style="background:var(--cyan);"></span> Verbunden als @${xLive.username}</span>
+        <span class="status-chip">${ICON_X} <span class="dot" style="background:#2ee6a6;"></span> Verbunden als @${xLive.username}</span>
         <span style="color:var(--muted); font-size:13px;">${xLive.followers != null ? xLive.followers.toLocaleString("de-DE") + " Follower (live)" : ""}</span>
       `;
     } else {
       el.innerHTML = `
-        <button class="btn btn-primary" id="xConnectBtn">𝕏 Mit X verbinden</button>
+        <button class="btn btn-primary" id="xConnectBtn">${ICON_X} Mit X verbinden</button>
         <span style="color:var(--muted); font-size:13px;">Verbindet deinen echten X-Account per OAuth 2.0.</span>
       `;
       const btn = document.getElementById("xConnectBtn");
@@ -71,12 +77,12 @@
     if (!el) return;
     if (ytLive.connected) {
       el.innerHTML = `
-        <span class="status-chip"><span class="dot" style="background:var(--red, #ff0000);"></span> Verbunden als ${ytLive.title}</span>
+        <span class="status-chip">${ICON_YOUTUBE} <span class="dot" style="background:#2ee6a6;"></span> Verbunden als ${ytLive.title}</span>
         <span style="color:var(--muted); font-size:13px;">${ytLive.subscriberCount != null ? Number(ytLive.subscriberCount).toLocaleString("de-DE") + " Abonnenten (live)" : ""}</span>
       `;
     } else {
       el.innerHTML = `
-        <button class="btn btn-primary" id="ytConnectBtn">▶ Mit YouTube verbinden</button>
+        <button class="btn btn-primary" id="ytConnectBtn">${ICON_YOUTUBE} Mit YouTube verbinden</button>
         <span style="color:var(--muted); font-size:13px;">Verbindet deinen echten YouTube-Kanal per OAuth 2.0.</span>
       `;
       const btn = document.getElementById("ytConnectBtn");
@@ -177,12 +183,14 @@
       x: xLive.connected ? "on" : "off",
       youtube: ytLive.connected ? "on" : "off",
     };
+    const liveIcons = { x: ICON_X, youtube: ICON_YOUTUBE };
     el.innerHTML = PLATFORMS.map((p) => {
       const state = liveStatus[p.id] || "unset";
+      const inner = liveIcons[p.id] || p.code;
       return `
         <div class="platform-status-item" title="${p.name}${state === "unset" ? " (noch keine Live-Anbindung)" : ""}">
-          <div class="platform-status-badge" style="color:${p.color}; border-color:${p.color};">
-            ${p.code}
+          <div class="platform-status-badge" style="color:${p.color}; border-color:${p.color}; font-size:18px;">
+            ${inner}
             <span class="platform-status-indicator ${state}"></span>
           </div>
           <span class="platform-status-label">${p.name}</span>
